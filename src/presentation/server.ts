@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import path from 'path';
+import cors from 'cors';
 
 interface Options {
   port: number;
@@ -26,6 +27,11 @@ export class Server {
   
   
   async start() {
+
+    //* Habilitar CORS para permitir solicitudes desde Angular (puerto 4200)
+    this.app.use(cors( 
+      {origin: 'http://localhost:4200'}
+     ));
     
 
     //* Middlewares

@@ -9,6 +9,7 @@ import { EmailService } from './email.service';
 export class AuthService {
 
   // DI
+
   constructor(
     // DI - Email Service
     private readonly emailService: EmailService,
@@ -17,15 +18,17 @@ export class AuthService {
 
   public async registerUser( registerUserDto: RegisterUserDto ) {
 
+
+
     const existUser = await UserModel.findOne({ email: registerUserDto.email });
     if ( existUser ) throw CustomError.badRequest('Email already exist');
 
     try {
       const user = new UserModel(registerUserDto);
-      
+
       // Encriptar la contraseña
       user.password = bcryptAdapter.hash( registerUserDto.password );
-      
+
       await user.save();
 
       // Email de confirmación
@@ -33,12 +36,13 @@ export class AuthService {
 
       const { password, ...userEntity } = UserEntity.fromObject(user);
 
-      const token = await JwtAdapter.generateToken({ id: user.id });
-      if ( !token ) throw CustomError.internalServer('Error while creating JWT');
+      const tokenData = await JwtAdapter.generateToken({ id: user.id });
+      if ( !tokenData ) throw CustomError.internalServer('Error while creating JWT');
 
-      return { 
-        user: userEntity, 
-        token: token,
+      return {
+        user: userEntity,
+        token: tokenData.token,
+        expiresIn: tokenData.expiresInSeconds,
       };
 
     } catch (error) {
@@ -58,13 +62,14 @@ export class AuthService {
 
 
     const { password, ...userEntity} = UserEntity.fromObject( user );
-    
-    const token = await JwtAdapter.generateToken({ id: user.id });
-    if ( !token ) throw CustomError.internalServer('Error while creating JWT');
+
+    const tokenData = await JwtAdapter.generateToken({ id: user.id });
+    if ( !tokenData ) throw CustomError.internalServer('Error while creating JWT');
 
     return {
       user: userEntity,
-      token: token,
+      token: tokenData.token,
+      expiresIn: tokenData.expiresInSeconds,
     }
 
   }
@@ -72,10 +77,10 @@ export class AuthService {
 
   private sendEmailValidationLink = async( email: string ) => {
 
-    const token = await JwtAdapter.generateToken({ email });
-    if ( !token ) throw CustomError.internalServer('Error getting token');
+    const tokenData = await JwtAdapter.generateToken({ email });
+    if ( !tokenData ) throw CustomError.internalServer('Error getting token');
 
-    const link = `${ envs.WEBSERVICE_URL }/auth/validate-email/${ token }`;
+    const link = `${ envs.WEBSERVICE_URL }/auth/validate-email/${ tokenData }`;
     const html = `
       <h1>Validate your email</h1>
       <p>Click on the following link to validate your email</p>

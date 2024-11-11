@@ -4,23 +4,32 @@ import { envs } from './envs';
 
 const JWT_SEED = envs.JWT_SEED;
 
-
+type TokenData = {
+  token: string;
+  expiresInSeconds: number;
+};
 
 export class JwtAdapter {
 
   // DI?
-
-  static async generateToken( payload:any, duration: string = '2h' ) {
-
+  
+  
+  static async generateToken( payload:any, duration: string = '2h' ) :  Promise<TokenData | null>  {
+    
+    const expiresInSeconds = 2 * 60 * 60;
+    
     return new Promise((resolve) => {
       jwt.sign(payload, JWT_SEED, { expiresIn: duration }, (err, token) => {
         
         if ( err ) return resolve(null);
 
-        resolve(token)
+        resolve({
+          token: token as string,
+          expiresInSeconds: expiresInSeconds
+        });
 
       });
-    })
+    });
 
 
 
