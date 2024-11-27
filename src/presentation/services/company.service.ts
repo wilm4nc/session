@@ -52,10 +52,13 @@ export class CompanyService{
                 next:(Math.floor(total/ limit)>page)? `/api/companies?page=${page +1}&limit=${ limit}`: null,
                 prev:(page - 1> 0)? `/api/companies?page=${page -1}&limit=${ limit}`: null,
             
-            companmies: companies.map(company=>({
+            data: companies.map(company=>({
                 id: company.id,
                 name: company.name,
                 isActive: company.isActive,
+                subscriptionStatus : company.subscriptionStatus,
+                email : company.email,
+                phone : company.phone,
 
             }))
         }

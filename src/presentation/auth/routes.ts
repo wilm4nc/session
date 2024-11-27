@@ -2,6 +2,7 @@ import { envs } from './../../config';
 import { Router } from 'express';
 import { AuthController } from './controller';
 import { AuthService, EmailService } from '../services';
+import { AuthMiddleware } from '../middlewares/auth.middleware';
 
 
 
@@ -28,10 +29,9 @@ export class Authroutes {
     
     router.post('/login', controller.loginUser );
     router.post('/register', controller.registerUser );    
-    router.get('/validate-email/:token', controller.validateEmail );
-
-
-
+    router.get('/validate-email/:token', controller.validateEmail );    
+    router.post('/isTokenValid', [AuthMiddleware.validateJWT], controller.isTokenValid  );
+    
     return router;
   }
 

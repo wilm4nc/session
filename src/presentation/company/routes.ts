@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { CompanyController } from './Controller';
+import { CompanyController } from './controller';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 import { CompanyService } from '../services/company.service';
 

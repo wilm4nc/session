@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { CustomError, LoginUserDto, RegisterUserDto } from '../../domain';
 import { AuthService } from '../services/auth.service';
+import { AuthMiddleware } from '../middlewares/auth.middleware';
 
 
 
@@ -8,7 +9,7 @@ export class AuthController {
 
   // DI
   constructor(
-    public readonly authService: AuthService,
+    public readonly authService: AuthService
   ) {}
 
   private handleError = (error: unknown, res: Response ) => {
@@ -55,6 +56,10 @@ export class AuthController {
       .then( () => res.json('Email was validated properly') )
       .catch( error => this.handleError(error, res) );
 
+  }
+
+  isTokenValid = async (req: Request, res: Response): Promise<void> => {
+    res.json({ IsValid: true });
   }
 
 
